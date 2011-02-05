@@ -5,6 +5,13 @@
 			if pos collect (subseq line n pos)
 			else collect (subseq line n)
 		while pos))
+		
+(defun untokenize-line (delim line)
+	(loop with l = (length line)
+				for n = 0 then (+ n 1)
+			collect (nth n line)
+			if (< n (- l 1)) collect delim
+		while (/= n (- l 1))))
 
 (defun triangulate (tokens out-stream)
 	(write-line (concatenate 'string (nth 0 tokens) " " (nth 1 tokens) " " (nth 2 tokens) " " (nth 3 tokens) " ") out-stream)
@@ -18,12 +25,12 @@
 				(write-line str out-stream))
 			(write-line str out-stream))))
 
-(defun read-obj-file (filename)
+(defun obj-tri (filename)
 	(with-open-file (in-stream filename :direction :input)
-		(with-open-file (out-stream "C:/Users/Flawe/lisp/test.obj" :direction :output :if-exists :supersede :if-does-not-exist :create)
-			(do ((line (read-line in-stream nil)
-						(read-line in-stream nil)))
-					((null line))
-				(proc-line line out-stream)))))
+		(let ((new-path (format nil "~{~a~}" (untokenize-line "/" (concatenate 'list (butlast (tokenize-line "/" filename)) (list (format nil "tri_~{~a~}" (last (tokenize-line "/" filename)))))))))
+				(with-open-file (out-stream new-path :direction :output :if-exists :supersede :if-does-not-exist :create)
+					(do ((line (read-line in-stream nil)
+								(read-line in-stream nil)))
+							((null line))
+						(proc-line line out-stream))))))
 
-(defun test-obj () (read-obj-file "C:/Users/Flawe/Game Dev/Models/cart.obj"))
