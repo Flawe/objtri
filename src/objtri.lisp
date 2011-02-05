@@ -18,9 +18,9 @@
 	(write-line (concatenate 'string (nth 0 tokens) " " (nth 1 tokens) " " (nth 3 tokens) " " (nth 4 tokens) " ") out-stream))
 	
 (defun proc-line (str out-stream)
-	(let ((tokens (tokenize-line " " str)))
+	(let ((tokens (tokenize-line " " (string-right-trim " " str))))
 		(if (string= (first tokens) "f")
-			(if (eq 6 (list-length tokens))
+			(if (eq 5 (list-length tokens))
 				(triangulate tokens out-stream)
 				(write-line str out-stream))
 			(write-line str out-stream))))
